@@ -185,3 +185,39 @@ def delete_follow_request(user_id):
     )
 
     return jsonify({'message': 'Follow request deleted successfully.'}), 200
+
+
+@user.route('/accept/<user_id>', methods=['POST'])
+@jwt_required()
+def accept_request(user_id):
+    current_user_id = get_jwt_identity()
+    current_user = mongo.db.users.find_one({'_id': ObjectId(current_user_id)})
+
+    # Check if the current user has a request from the user to accept
+    request = None
+    for req in current_user['request_list']:
+        if req['id'] == user_id:
+            request = req
+            break
+    if not request:
+        return jsonify({'message': 'No follow request from user.'}), 400
+
+    # Move the user from the request_list to followers
+    mongo.db.users.update_one({'_id': ObjectId(current_user_id)}, {
+                              '$pull': {'request_list': request}})
+    mongo.db.users.update_one({'_id': ObjectId(current_user_id)}, {
+                              '$push': {'followers': request}})
+
+    # Move the current user from requested to following
+    user_to_follow = mongo.db.users.find_one({'_id': ObjectId(user_id)})
+    current_user_name = current_user['firstName'] + \
+        ' ' + current_user['lastName']
+    user_to_follow_name = user_to_follow['firstName'] + \
+        ' ' + user_to_follow['lastName']
+
+    mongo.db.users.update_one({'_id': ObjectId(user_id)}, {
+                              '$pull': {'requested': {'id': current_user_id, 'name': current_user_name}}})
+    mongo.db.users.update_one({'_id': ObjectId(user_id)}, {'$push': {'following': {
+                              'id': current_user_id, 'name': current_user_name}}})
+
+    return jsonify({'message': f'{user_to_follow_name} is following you now.'}), 200
