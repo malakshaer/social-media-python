@@ -152,3 +152,36 @@ def unfollow_user(user_id):
     )
 
     return jsonify({'message': 'User unfollowed successfully.'}), 200
+
+
+@user.route('/delete-request/<user_id>', methods=['DELETE'])
+@jwt_required()
+def delete_follow_request(user_id):
+    # Get the current user's ID and information
+    current_user_id = get_jwt_identity()
+    current_user = mongo.db.users.find_one({'_id': ObjectId(current_user_id)})
+    current_user_name = current_user['firstName'] + \
+        ' ' + current_user['lastName']
+
+    # Get the user being followed's information
+    user_to_follow = mongo.db.users.find_one({'_id': ObjectId(user_id)})
+    user_to_follow_name = user_to_follow['firstName'] + \
+        ' ' + user_to_follow['lastName']
+
+    # Check if the current user has sent a follow request to the other user
+    if {'id': user_id, 'name': user_to_follow_name} not in current_user['requested']:
+        return jsonify({'message': 'You have not sent a follow request to this user.'}), 400
+
+    # Remove the other user from the current user's requested list
+    mongo.db.users.update_one(
+        {'_id': ObjectId(current_user_id)},
+        {'$pull': {'requested': {'id': user_id, 'name': user_to_follow_name}}}
+    )
+
+    # Remove the current user from the other user's request list
+    mongo.db.users.update_one(
+        {'_id': ObjectId(user_id)},
+        {'$pull': {'request_list': {'id': current_user_id, 'name': current_user_name}}}
+    )
+
+    return jsonify({'message': 'Follow request deleted successfully.'}), 200
