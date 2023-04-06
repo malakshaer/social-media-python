@@ -123,3 +123,32 @@ def follow_user(user_id):
     )
 
     return jsonify({'message': 'User followed successfully.'}), 200
+
+
+@user.route('/unfollow/<user_id>', methods=['PUT'])
+@jwt_required()
+def unfollow_user(user_id):
+    current_user_id = get_jwt_identity()
+
+    # Check if user2 exists and is followed by user1
+    user2 = mongo.db.users.find_one({'_id': ObjectId(user_id)})
+    if not user2:
+        return jsonify({'message': 'User not found.'}), 404
+    if {'id': str(user2['_id']), 'name': user2['firstName'] + ' ' + user2['lastName']} not in mongo.db.users.find_one({'_id': ObjectId(current_user_id)})['following']:
+        return jsonify({'message': 'User is not followed.'}), 400
+
+    # Remove user2 from current user's following list
+    mongo.db.users.update_one(
+        {'_id': ObjectId(current_user_id)},
+        {'$pull': {'following': {'id': str(
+            user2['_id']), 'name': user2['firstName'] + ' ' + user2['lastName']}}}
+    )
+
+    # Remove current user from user2's followers list
+    mongo.db.users.update_one(
+        {'_id': ObjectId(user_id)},
+        {'$pull': {'followers': {'id': str(current_user_id), 'name': mongo.db.users.find_one({'_id': ObjectId(current_user_id)})[
+            'firstName'] + ' ' + mongo.db.users.find_one({'_id': ObjectId(current_user_id)})['lastName']}}}
+    )
+
+    return jsonify({'message': 'User unfollowed successfully.'}), 200
