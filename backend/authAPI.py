@@ -19,49 +19,48 @@ def record(state):
 @auth.route('/register', methods=['POST'])
 def register():
     # Get user input
-    firstName = request.json['firstName']
-    lastName = request.json['lastName']
+    first_name = request.json['firstName']
+    last_name = request.json['lastName']
     email = request.json['email']
     password = request.json['password']
-    confirmPassword = request.json['confirmPassword']
+    confirm_password = request.json['confirmPassword']
 
-    # Check if email already exists
-    if mongo.db.users.find_one({'email': email}):
-        return jsonify({'message': 'Email already exists'})
+    # Check if user already exists
+    user = mongo.db.users.find_one({'email': email})
+    if user:
+        return jsonify({'message': 'User already exists.'}), 409
 
     # Check if passwords match
-    if password != confirmPassword:
-        return jsonify({'message': 'Passwords do not match'})
+    if password != confirm_password:
+        return jsonify({'message': 'Passwords do not match.'}), 400
 
-    # Hash the password
-    hashed_password1 = bcrypt.hashpw(
-        password.encode('utf-8'), bcrypt.gensalt())
+    # Hash password
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
-    hashed_password2 = bcrypt.hashpw(
-        confirmPassword.encode('utf-8'), bcrypt.gensalt())
-
-    # Create token
-    access_token = create_access_token(identity=email)
-
-    # Insert the new user into the database
-    mongo.db.users.insert_one({
-        'firstName': firstName,
-        'lastName': lastName,
+    # Insert new user into database
+    result = mongo.db.users.insert_one({
+        'firstName': first_name,
+        'lastName': last_name,
         'email': email,
-        'password': hashed_password1,
-        'confirmPassword': hashed_password2,
-        'tokens': [
-            {
-                'token': str(access_token)
-            }
-        ]
-    }).inserted_id
+        'password': hashed_password,
+        'followers': [],
+        'following': []
+    })
+
+    # Generate access token with user ID as identity
+    access_token = create_access_token(identity=str(result.inserted_id))
+
+    # Add token to user's tokens list
+    mongo.db.users.update_one(
+        {'_id': result.inserted_id},
+        {'$push': {'tokens': {'token': access_token}}}
+    )
 
     # Return success message with token
     return jsonify({
-        'message': 'User created successfully',
-        'token': str(access_token)
-    }), 200
+        'message': 'User created.',
+        'token': access_token
+    }), 201
 
 
 @auth.route('/login', methods=['POST'])
