@@ -40,3 +40,24 @@ def get_profile():
     }
 
     return jsonify(user_data), 200
+
+
+@user.route('/private', methods=['PUT'])
+@jwt_required()
+def make_account_private():
+    current_user_id = get_jwt_identity()
+
+    # Get the user's current privacy setting
+    user = mongo.db.users.find_one({'_id': ObjectId(current_user_id)})
+    is_private = user.get('is_private', False)
+
+    # Toggle the user's privacy setting
+    mongo.db.users.update_one(
+        {'_id': ObjectId(current_user_id)},
+        {'$set': {'is_private': not is_private}}
+    )
+
+    if is_private:
+        return jsonify({'message': 'Account is now public.'}), 200
+    else:
+        return jsonify({'message': 'Account is now private.'}), 200
