@@ -11,7 +11,9 @@
     flex-direction: column;
     padding: 0 20px;
     box-sizing: border-box;
-    color: #fff;
+    color: #010000;
+    font-size: 30px;
+    font-weight: bold;
     text-align: center;
     min-height: 300px;
     margin-bottom: 20px;
@@ -24,3 +26,4 @@
     border: 5px solid #fff;
     margin-bottom: 10px;
 }
+
