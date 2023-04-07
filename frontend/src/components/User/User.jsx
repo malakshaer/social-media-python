@@ -1,11 +1,13 @@
 import React from "react";
 import "./user.css";
-import Button from "../Button/Button";
-// import { ShopContext } from "../../context/shop-context";
 
 const User = (props) => {
   const { firstName, lastName } = props.data;
-  //   const { follow } = useContext(ShopContext);
+  const { textButton } = props;
+
+  const handleButton = () => {
+    console.log("follow");
+  };
 
   return (
     <div className="user">
@@ -15,7 +17,14 @@ const User = (props) => {
           {firstName} {lastName}
         </span>
       </div>
-      <Button text={"Remove"} />
+      <button
+        className="btn"
+        onClick={() => {
+          handleButton();
+        }}
+      >
+        {textButton}
+      </button>
     </div>
   );
 };
