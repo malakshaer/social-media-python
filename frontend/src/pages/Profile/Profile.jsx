@@ -1,9 +1,8 @@
 import React from "react";
 import Navbar from "../../components/Navbar/Navbar";
 import profileImage from "../../assets/profileImage.png";
-import UsersNavigation from "../../components/UsersNavigation/UsersNavigation";
 import "./profile.css";
-import FollowersList from "../../components/FollowersList/FollowersList";
+import UsersNavigation from "../../components/UsersNavigation/UsersNavigation";
 
 const Profile = () => {
   return (
@@ -14,10 +13,7 @@ const Profile = () => {
           <img src={profileImage} alt="" />
           <p>Malak Shaer</p>
         </div>
-        <div>
-          <UsersNavigation />
-          <FollowersList />
-        </div>
+        <UsersNavigation />
       </div>
     </div>
   );
