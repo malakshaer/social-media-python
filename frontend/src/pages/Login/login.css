@@ -1,0 +1,58 @@
+body{
+    background: #bdc3c7; 
+    background: -webkit-linear-gradient(to right, #2c3e50, #bdc3c7);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #2c3e50, #bdc3c7); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.header{
+    text-align: center;
+    padding: 10px;
+    font-size: 30px;
+    font-weight: bold;
+    color: rgb(8, 7, 7);
+}
+
+.form{
+    background-color: white;
+    border-radius: 5px;
+    width: 450px;    
+    margin: 60px auto;
+    padding: 10px;
+    padding-bottom: 20px;    
+}
+
+.form-body{    
+    padding: 20px 10px;
+}
+
+.form-body > *{
+    padding: 5px;    
+    justify-content: center;
+}
+
+.footer{
+    text-align: center;
+}
+
+.input{
+    width: 100%;
+    padding: 10px;  
+    display: flex;
+}
+
+.form__input{
+    padding: 10px;
+    border-radius: 5px;
+    width: 300px;
+    height: 30px;
+    border: 1px solid rgb(171, 169, 169);    
+}
+
+.btn{
+    width: 100px;
+    padding: 10px;
+    color: white;
+    border-radius: 5px;
+    background-color: #2642af;
+    border: 1px solid white;  
+}
