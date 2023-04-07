@@ -23,7 +23,7 @@ const Login = () => {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(response.user));
         // console.log(data);
-        navigate("/shop");
+        navigate("/home");
       })
       .catch((error) => {
         console.log(error);
@@ -56,9 +56,14 @@ const Login = () => {
         </div>
       </div>
       <div className="footer">
-        <button onClick={() => handleSubmit()} type="submit" className="btn">
+        <button onClick={() => handleSubmit()} type="submit">
           Login
         </button>
+        <div>
+          <p>
+            Don't have an account <a href="/"> Register</a>{" "}
+          </p>
+        </div>
       </div>
     </div>
   );
