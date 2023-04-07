@@ -1,0 +1,32 @@
+.users-navigation{
+    height: 60px;
+    width: 70%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding: 0.5rem 0rem;
+    background-color: white; 
+    border-radius: 5px 5px 0 0;   
+    box-shadow: 0 2px 0 0 rgba(9, 9, 9, 0.23);
+}
+
+.users-navigation-menu {
+    margin: auto;
+}
+
+.users-navigation-menu ul {
+    display: flex;
+    padding: 0;
+}
+
+.users-navigation-menu li {
+    list-style-type: none;
+    margin: 0 1rem;
+}
+
+.users-navigation-menu li a {
+    text-decoration: none;
+    display: block;
+    width: 100%;
+}
