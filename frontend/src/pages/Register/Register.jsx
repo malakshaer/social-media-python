@@ -4,7 +4,8 @@ import "./register.css";
 import request from "../../config";
 
 const Register = () => {
-  const [userName, setUserName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -12,7 +13,8 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     const data = {
-      userName,
+      firstName,
+      lastName,
       email,
       password,
       confirmPassword,
@@ -26,7 +28,7 @@ const Register = () => {
         console.log(response);
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(response.user));
-        navigate("/shop");
+        navigate("/home");
       })
       .catch((error) => {
         console.log(error);
@@ -41,10 +43,20 @@ const Register = () => {
           <input
             className="form__input"
             type="text"
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)}
-            id="username"
-            placeholder="User Name"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            id="firstName"
+            placeholder="First Name"
+          />
+        </div>
+        <div className="input">
+          <input
+            className="form__input"
+            type="text"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            id="lastName"
+            placeholder="Last Name"
           />
         </div>
         <div className="input">
@@ -79,9 +91,14 @@ const Register = () => {
         </div>
       </div>
       <div className="footer">
-        <button onClick={() => handleSubmit()} type="submit" className="btn">
+        <button onClick={() => handleSubmit()} type="submit">
           Register
         </button>
+        <div>
+          <p>
+            Already have an account <a href="/login">Login</a>{" "}
+          </p>
+        </div>
       </div>
     </div>
   );
