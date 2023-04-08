@@ -26,8 +26,8 @@ const Register = () => {
     })
       .then((response) => {
         console.log(response);
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(response.user));
+        localStorage.setItem("token", response.token);
+        localStorage.setItem("user", response.name);
         navigate("/home");
       })
       .catch((error) => {
