@@ -4,9 +4,10 @@ import FollowersList from "../FollowersList/FollowersList";
 import FollowingList from "../FollowingList/FollowingList";
 import RequestsList from "../RequestsList/RequestsList";
 import RequestSentList from "../RequestSentList/RequestSentList";
+import Empty from "../Empty/Empty";
 
 const UsersNavigation = () => {
-  const [listType, setListType] = useState("followers");
+  const [listType, setListType] = useState("");
   const [isActive, setIsActive] = useState(false);
 
   const renderList = () => {
@@ -20,9 +21,10 @@ const UsersNavigation = () => {
       case "sentRequests":
         return <RequestSentList />;
       default:
-        return null;
+        return <Empty />;
     }
   };
+
   return (
     <div>
       <nav className="users-navigation">
