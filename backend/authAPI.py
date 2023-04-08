@@ -44,7 +44,9 @@ def register():
         'email': email,
         'password': hashed_password,
         'followers': [],
-        'following': []
+        'following': [],
+        'bio': "",
+        'is_private': False,
     })
 
     # Generate access token with user ID as identity
@@ -65,7 +67,6 @@ def register():
 
 @auth.route('/login', methods=['POST'])
 def login():
-
     # Check if user is already logged in
     if 'user_id' in session:
         return jsonify({'message': 'User already logged in.'}), 400
@@ -81,16 +82,29 @@ def login():
 
     # Check if password is correct
     if bcrypt.checkpw(password.encode('utf-8'), user['password']):
+        # Generate a new JWT token
+        access_token = create_access_token(identity=str(user['_id']))
+
+        # Remove the last token from the user's tokens list
+        mongo.db.users.update_one(
+            {'_id': user['_id']},
+            {'$pop': {'tokens': -1}}
+        )
+
+        # Add the new token to the user's tokens list
+        mongo.db.users.update_one(
+            {'_id': user['_id']},
+            {'$push': {'tokens': {'token': access_token}}}
+        )
+
         # Store user id in session
         session['user_id'] = str(user['_id'])
 
-        # Generate a JWT token
-        access_token = create_access_token(identity=email)
-
-        # Return success message with token
+        # Return success message with the new token and name
         return jsonify({
             'message': 'You are logged in.',
-            'token': str(access_token)
+            'token': str(access_token),
+            'name': f"{user.get('firstName', '')} {user.get('lastName', '')}"
         }), 201
 
     return jsonify({'message': 'Invalid email or password.'}), 401
