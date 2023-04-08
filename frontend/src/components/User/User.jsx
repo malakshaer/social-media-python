@@ -1,28 +1,14 @@
 import React from "react";
 import "./user.css";
 
-const User = (props) => {
-  const { firstName, lastName } = props.data;
-  const { textButton } = props;
-
-  const handleButton = () => {
-    console.log("follow");
-  };
-
+const User = ({ name, textButton, onClick }) => {
   return (
     <div className="user">
       {/* <img src={userImage} alt="" /> */}
       <div className="username">
-        <span>
-          {firstName} {lastName}
-        </span>
+        <span>{name}</span>
       </div>
-      <button
-        className="btn"
-        onClick={() => {
-          handleButton();
-        }}
-      >
+      <button className="btn" onClick={onClick}>
         {textButton}
       </button>
     </div>
