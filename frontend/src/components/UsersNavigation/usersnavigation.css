@@ -58,3 +58,12 @@ button:focus::after, button:active::after {
     opacity: 1;
 }
   
+@media screen and (max-width: 600px) {
+    .users-navigation {
+      font-size: 14px;
+    }
+    
+    .users-navigation-menu li {
+      margin: 0 0.5rem;
+    }
+}
