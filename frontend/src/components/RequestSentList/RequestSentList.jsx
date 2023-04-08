@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import User from "../User/User";
 import "./requestsentlist.css";
 import axios from "axios";
+import Empty from "../Empty/Empty";
 
 const RequestSendList = () => {
   const [sentToUsers, setSentToUsers] = useState([]);
@@ -37,14 +38,18 @@ const RequestSendList = () => {
 
   return (
     <div className="users-card">
-      {sentToUsers.map((user) => (
-        <User
-          key={user.id}
-          name={user.name}
-          textButton="delete request"
-          onClick={() => handleDeleteRequest(user.id)}
-        />
-      ))}
+      {sentToUsers.length === 0 ? (
+        <Empty />
+      ) : (
+        sentToUsers.map((user) => (
+          <User
+            key={user.id}
+            name={user.name}
+            textButton="delete request"
+            onClick={() => handleDeleteRequest(user.id)}
+          />
+        ))
+      )}
     </div>
   );
 };

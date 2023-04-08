@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import User from "../User/User";
 import "./requestslist.css";
 import axios from "axios";
+import Empty from "../Empty/Empty";
 
 const RequestsList = () => {
   const [requestsWaiting, setRequestsWaiting] = useState([]);
@@ -38,14 +39,18 @@ const RequestsList = () => {
 
   return (
     <div className="users-card">
-      {requestsWaiting.map((user) => (
-        <User
-          key={user.id}
-          name={user.name}
-          textButton="accept"
-          onClick={() => handleAcceptUser(user.id)}
-        />
-      ))}
+      {requestsWaiting.length === 0 ? (
+        <Empty />
+      ) : (
+        requestsWaiting.map((user) => (
+          <User
+            key={user.id}
+            name={user.name}
+            textButton="Accept"
+            onClick={() => handleAcceptUser(user.id)}
+          />
+        ))
+      )}
     </div>
   );
 };

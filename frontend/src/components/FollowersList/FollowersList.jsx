@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import User from "../User/User";
+import Empty from "../Empty/Empty";
 import "./followerslist.css";
 import axios from "axios";
 
@@ -37,14 +38,18 @@ const FollowersList = () => {
 
   return (
     <div className="users-card">
-      {followers.map((user) => (
-        <User
-          key={user.id}
-          name={user.name}
-          textButton="Remove"
-          onClick={() => handleRemoveFollower(user.id)}
-        />
-      ))}
+      {followers.length === 0 ? (
+        <Empty />
+      ) : (
+        followers.map((user) => (
+          <User
+            key={user.id}
+            name={user.name}
+            textButton="Remove"
+            onClick={() => handleRemoveFollower(user.id)}
+          />
+        ))
+      )}
     </div>
   );
 };

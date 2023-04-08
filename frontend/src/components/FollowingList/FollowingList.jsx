@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import User from "../User/User";
 import "./followinglist.css";
 import axios from "axios";
+import Empty from "../Empty/Empty";
 
 const FollowingList = () => {
   const [followings, setFollowings] = useState([]);
@@ -37,14 +38,18 @@ const FollowingList = () => {
 
   return (
     <div className="users-card">
-      {followings.map((user) => (
-        <User
-          key={user.id}
-          name={user.name}
-          textButton="unfollow"
-          onClick={() => handleUnFollow(user.id)}
-        />
-      ))}
+      {followings.length === 0 ? (
+        <Empty />
+      ) : (
+        followings.map((user) => (
+          <User
+            key={user.id}
+            name={user.name}
+            textButton="unfollow"
+            onClick={() => handleUnFollow(user.id)}
+          />
+        ))
+      )}
     </div>
   );
 };
