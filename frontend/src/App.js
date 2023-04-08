@@ -5,16 +5,19 @@ import Register from "./pages/Register/Register";
 import Home from "./pages/Home/Home";
 import Logout from "./components/Logout/Logout";
 import Profile from "./pages/Profile/Profile";
+import EditAccount from "./components/EditAccount/EditAccount";
+// import PrivateRoute from "./contexts/PrivateRoute";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Register />} />
-        <Route path="/Login" element={<Login />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/home" element={<Home />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/logout" element={<Logout />} />
+        <Route path="/edit-account" element={<EditAccount />} />
       </Routes>
     </BrowserRouter>
   );
