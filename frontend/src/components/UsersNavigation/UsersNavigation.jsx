@@ -4,7 +4,6 @@ import FollowersList from "../FollowersList/FollowersList";
 import FollowingList from "../FollowingList/FollowingList";
 import RequestsList from "../RequestsList/RequestsList";
 import RequestSentList from "../RequestSentList/RequestSentList";
-import Empty from "../Empty/Empty";
 
 const UsersNavigation = () => {
   const [listType, setListType] = useState("");
@@ -21,7 +20,7 @@ const UsersNavigation = () => {
       case "sentRequests":
         return <RequestSentList />;
       default:
-        return <Empty />;
+        return null;
     }
   };
 
