@@ -1,9 +1,12 @@
+from bson import ObjectId
+from flask import jsonify, request
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from pymongo import ReturnDocument
 from bson.objectid import ObjectId
 from flask_pymongo import PyMongo
 import datetime
+import base64
 
 user = Blueprint('userAPI', __name__)
 
@@ -16,30 +19,29 @@ def record(state):
     mongo.init_app(state.app)
 
 
-@user.route('/profile', methods=['GET'])
+@user.route('/update-profile', methods=['PUT'])
 @jwt_required()
-def get_profile():
-    # Get the user ID from the JWT token
-    current_user_id = get_jwt_identity()
-
-    # Query the user document from the database
-    user = mongo.db.users.find_one({'_id': ObjectId(current_user_id)})
-
-    # Check if user exists
+def update_profile():
+    user_id = get_jwt_identity()
+    user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
     if not user:
-        return jsonify({'message': 'User not found.'}), 404
+        return jsonify({'message': 'User not found'}), 404
 
-    # Serialize user document to JSON and return it
-    user_data = {
-        'firstName': user['firstName'],
-        'lastName': user['lastName'],
-        'email': user['email'],
-        'followers': user['followers'],
-        'following': user['following'],
-        'is_private': user['is_private']
-    }
+    data = request.json
+    first_name = data.get('firstName', user['firstName'])
+    last_name = data.get('lastName', user['lastName'])
+    bio = data.get('bio', user['bio'])
 
-    return jsonify(user_data), 200
+    # update the user profile
+    mongo.db.users.update_one({'_id': ObjectId(user_id)}, {
+        '$set': {
+            'firstName': first_name,
+            'lastName': last_name,
+            'bio': bio
+        }
+    })
+
+    return jsonify({'message': 'Profile updated successfully'}), 200
 
 
 @user.route('/private', methods=['PUT'])
@@ -57,10 +59,10 @@ def make_account_private():
         {'$set': {'is_private': not is_private}}
     )
 
-    if is_private:
-        return jsonify({'message': 'Account is now public.'}), 200
+    if not is_private:
+        return jsonify({'message': 'Account is now private.', 'isPrivate': True}), 200
     else:
-        return jsonify({'message': 'Account is now private.'}), 200
+        return jsonify({'message': 'Account is now public.', 'isPrivate': False}), 200
 
 
 @user.route('/follow/<user_id>', methods=['POST'])
@@ -221,3 +223,173 @@ def accept_request(user_id):
                               'id': current_user_id, 'name': current_user_name}}})
 
     return jsonify({'message': f'{user_to_follow_name} is following you now.'}), 200
+
+
+@user.route('/remove-follower/<user_id>', methods=['POST'])
+@jwt_required()
+def remove_follower(user_id):
+    # Get the current user's ID and information
+    current_user_id = get_jwt_identity()
+    current_user = mongo.db.users.find_one({'_id': ObjectId(current_user_id)})
+    current_user_name = current_user['firstName'] + \
+        ' ' + current_user['lastName']
+
+    # Get the user to be removed's information
+    user_to_remove = mongo.db.users.find_one({'_id': ObjectId(user_id)})
+    user_to_remove_name = user_to_remove['firstName'] + \
+        ' ' + user_to_remove['lastName']
+
+    # Check if the current user is following the user to be removed
+    request = None
+    for req in current_user['followers']:
+        if req['id'] == user_id:
+            request = req
+            break
+    if not request:
+        return jsonify({'message': 'This user is not following you.'}), 400
+
+    # Remove the user to be removed from the current user's follower's list
+    mongo.db.users.update_one(
+        {'_id': ObjectId(current_user_id)},
+        {'$pull': {'followers': {'id': user_id, 'name': user_to_remove_name}}}
+    )
+
+    # Remove the current user from the user to be removed's following list
+    mongo.db.users.update_one(
+        {'_id': ObjectId(user_id)},
+        {'$pull': {'following': {'id': current_user_id, 'name': current_user_name}}}
+    )
+
+    return jsonify({'message': f'You have removed {user_to_remove_name}.'})
+
+
+@user.route('/get-followers', methods=['GET'])
+@jwt_required()
+def get_followers():
+    # Get the current user's ID and information
+    current_user_id = get_jwt_identity()
+    current_user = mongo.db.users.find_one({'_id': ObjectId(current_user_id)})
+
+    # Get the list of users following the current user
+    followers = []
+    for follower in current_user['followers']:
+        follower_id = ObjectId(follower['id'])
+        follower_info = mongo.db.users.find_one({'_id': follower_id})
+        follower_name = follower_info['firstName'] + \
+            ' ' + follower_info['lastName']
+        followers.append({'id': str(follower_id), 'name': follower_name})
+
+    return jsonify({'followers': followers})
+
+
+@user.route('/get-following', methods=['GET'])
+@jwt_required()
+def get_following():
+    # Get the current user's ID and information
+    current_user_id = get_jwt_identity()
+    current_user = mongo.db.users.find_one({'_id': ObjectId(current_user_id)})
+
+    # Get the list of users following the current user
+    following = []
+    for follower in current_user['following']:
+        follower_id = ObjectId(follower['id'])
+        follower_info = mongo.db.users.find_one({'_id': follower_id})
+        follower_name = follower_info['firstName'] + \
+            ' ' + follower_info['lastName']
+        following.append({'id': str(follower_id), 'name': follower_name})
+
+    return jsonify({'following': following})
+
+
+@user.route('/get-request-list', methods=['GET'])
+@jwt_required()
+def get_request_list():
+    # Get the current user's ID and information
+    current_user_id = get_jwt_identity()
+    current_user = mongo.db.users.find_one({'_id': ObjectId(current_user_id)})
+
+    # Get the list of users following the current user
+    request_list = []
+    for follower in current_user['request_list']:
+        follower_id = ObjectId(follower['id'])
+        follower_info = mongo.db.users.find_one({'_id': follower_id})
+        follower_name = follower_info['firstName'] + \
+            ' ' + follower_info['lastName']
+        request_list.append({'id': str(follower_id), 'name': follower_name})
+
+    return jsonify({'requestList': request_list})
+
+
+@user.route('/get-sent-requests', methods=['GET'])
+@jwt_required()
+def get_sent_requests():
+    # Get the current user's ID and information
+    current_user_id = get_jwt_identity()
+    current_user = mongo.db.users.find_one({'_id': ObjectId(current_user_id)})
+
+    # Get the list of users following the current user
+    sent_requests = []
+    for follower in current_user['requested']:
+        follower_id = ObjectId(follower['id'])
+        follower_info = mongo.db.users.find_one({'_id': follower_id})
+        follower_name = follower_info['firstName'] + \
+            ' ' + follower_info['lastName']
+        sent_requests.append({'id': str(follower_id), 'name': follower_name})
+
+    return jsonify({'requested': sent_requests})
+
+
+@user.route('/upload', methods=['POST'])
+@jwt_required()
+def upload_image():
+    # Get the base64-encoded image data from the request
+    image_data = request.json['image_data']
+
+    # Convert the base64-encoded image data to bytes
+    image_bytes = base64.b64decode(image_data)
+
+    # Upload the image to the database
+    mongo.db.users.insert_one({'name': 'profileImage', 'data': image_bytes})
+
+    return jsonify({'success': True})
+
+
+@user.route('/get-user-info', methods=['GET'])
+@jwt_required()
+def get_user_info():
+    # Get current user from token
+    token = request.headers.get('Authorization').split()[1]
+    current_user = mongo.db.users.find_one({'tokens.token': token})
+
+    if current_user:
+        # Retrieve number of followers and following
+        num_followers = len(current_user.get('followers', []))
+        num_following = len(current_user.get('following', []))
+
+        # Return user info
+        return jsonify({
+            'id': str(current_user['_id']),
+            'firstName': current_user.get('firstName', ''),
+            'lastName': current_user.get('lastName', ''),
+            'numberFollowers': num_followers,
+            'numberFollowing': num_following,
+            'bio': current_user.get('bio', ''),
+            'is_private': current_user.get('is_private', '')
+        })
+    else:
+        return jsonify({'message': 'User not found.'}), 404
+
+
+@user.route('/get-all-users', methods=['GET'])
+def get_all_users():
+    users = mongo.db.users.find(
+        {}, {'firstName': 1, 'lastName': 1, 'followers': 1, 'following': 1, 'bio': 1})
+
+    result = []
+    for user in users:
+        user['_id'] = str(user['_id'])
+        user['num_followers'] = len(user['followers'])
+        user['num_following'] = len(user['following'])
+        result.append(user)
+
+    return jsonify(result)
