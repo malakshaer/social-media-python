@@ -34,7 +34,7 @@ const Logout = () => {
       localStorage.removeItem("token");
       navigate("/login", { replace: true });
     } else {
-      navigate("/");
+      navigate("/home");
     }
   });
 
