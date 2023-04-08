@@ -15,7 +15,7 @@ mongo = PyMongo(app)
 
 app.secret_key = 'secret key'
 app.config['JWT_SECRET_KEY'] = 'this-is-the-secret-key'
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=120)
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=120)
 
 
 app.register_blueprint(auth)
