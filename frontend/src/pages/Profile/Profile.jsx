@@ -28,7 +28,6 @@ const Profile = () => {
         };
 
         const response = await axios.get("/get-user-info", { headers });
-        console.log(response.data);
         const base64Image = `data:image/jpg;base64,${response.data.image}`;
         setUser({
           ...response.data,
