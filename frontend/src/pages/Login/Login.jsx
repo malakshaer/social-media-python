@@ -6,9 +6,15 @@ import request from "../../config";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!email || !password) {
+      setError("Please enter both email and password.");
+      return;
+    }
     const data = {
       email,
       password,
@@ -25,7 +31,7 @@ const Login = () => {
         navigate("/home");
       })
       .catch((error) => {
-        console.log(error);
+        setError("Invalid email or password.");
       });
   };
 
@@ -53,9 +59,10 @@ const Login = () => {
             placeholder="Password"
           />
         </div>
+        {error && <p className="error">{error}</p>}
       </div>
       <div className="footer">
-        <button onClick={() => handleSubmit()} type="submit">
+        <button onClick={handleSubmit} type="submit">
           Login
         </button>
         <div>

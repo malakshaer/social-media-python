@@ -9,9 +9,56 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [errors, setErrors] = useState({});
+
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const validateFields = () => {
+    let validationErrors = {};
+    let valid = true;
+
+    // Validate first name
+    if (!firstName.trim()) {
+      validationErrors.firstName = "First name is required";
+      valid = false;
+    }
+
+    // Validate last name
+    if (!lastName.trim()) {
+      validationErrors.lastName = "Last name is required";
+      valid = false;
+    }
+
+    // Validate email
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!email.trim()) {
+      validationErrors.email = "Email is required";
+      valid = false;
+    } else if (!emailRegex.test(email)) {
+      validationErrors.email = "Invalid email";
+      valid = false;
+    }
+
+    // Validate password
+    if (!password) {
+      validationErrors.password = "Password is required";
+      valid = false;
+    } else if (password.length < 6) {
+      validationErrors.password = "Password must be at least 6 characters long";
+      valid = false;
+    }
+
+    // Validate confirm password
+    if (password !== confirmPassword) {
+      validationErrors.confirmPassword = "Passwords do not match";
+      valid = false;
+    }
+
+    setErrors(validationErrors);
+    return valid;
+  };
+
+  const handleSubmit = async () => {
     const data = {
       firstName,
       lastName,
@@ -19,20 +66,22 @@ const Register = () => {
       password,
       confirmPassword,
     };
-    request({
-      method: "post",
-      url: "/register",
-      data,
-    })
-      .then((response) => {
-        console.log(response);
-        localStorage.setItem("token", response.token);
-        localStorage.setItem("user", response.name);
-        navigate("/home");
+    if (validateFields()) {
+      request({
+        method: "post",
+        url: "/register",
+        data,
       })
-      .catch((error) => {
-        console.log(error);
-      });
+        .then((response) => {
+          console.log(response);
+          localStorage.setItem("token", response.token);
+          localStorage.setItem("user", response.name);
+          navigate("/home");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   };
 
   return (
@@ -48,6 +97,7 @@ const Register = () => {
             id="firstName"
             placeholder="First Name"
           />
+          {errors.firstName && <p className="error">{errors.firstName}</p>}
         </div>
         <div className="input">
           <input
@@ -58,6 +108,7 @@ const Register = () => {
             id="lastName"
             placeholder="Last Name"
           />
+          {errors.lastName && <p className="error">{errors.lastName}</p>}
         </div>
         <div className="input">
           <input
@@ -68,6 +119,7 @@ const Register = () => {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
           />
+          {errors.email && <p className="error">{errors.email}</p>}
         </div>
         <div className="input">
           <input
@@ -78,6 +130,7 @@ const Register = () => {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
           />
+          {errors.password && <p className="error">{errors.password}</p>}
         </div>
         <div className="input">
           <input
