@@ -11,7 +11,7 @@ const RequestSendList = () => {
     async function fetchData() {
       try {
         const response = await axios.get("/get-sent-requests");
-        const sentRequestList = response.data.requested.map((user) => {
+        const sentRequestList = response.data.requestList.map((user) => {
           const base64Image = `data:image/jpg;base64,${user.image}`;
           return {
             id: user.id,
