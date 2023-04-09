@@ -1,15 +1,13 @@
 .user-card {
     display: flex;
     flex-direction: row;
-    align-items: center;    
-    justify-content: center;
-    padding: 20px;     
+    align-items: center;        
+    padding: 10px;     
     width: 70%;
     margin: 0 auto;
 }
   
-.user-card-left {
-    flex-grow: 1;
+.user-card-left {    
     text-align: left;
 }
 
@@ -23,7 +21,7 @@
 .user-card-center{
     flex-grow: 1;
     text-align: left;
-    justify-content: flex-start;
+    margin-left: 20px;    
 }
   
 .user-card-name {
