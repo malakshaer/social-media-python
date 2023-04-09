@@ -11,6 +11,7 @@ const EditAccount = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [bio, setBio] = useState("");
+  const [image, setImage] = useState("");
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isExpandedEdit, setIsExpandedEdit] = useState(false);
@@ -23,7 +24,11 @@ const EditAccount = () => {
       setError("First name and last name are required.");
       return;
     }
-    const userData = { firstName, lastName, bio };
+
+    let userData = { firstName, lastName, bio };
+    if (image) {
+      userData = { ...userData, image };
+    }
     const token = localStorage.getItem("token");
 
     request({
@@ -74,6 +79,20 @@ const EditAccount = () => {
         </div>
         {isExpandedEdit && (
           <form className="form-group">
+            <label htmlFor="image">Profile Image: </label>
+            <input
+              type="file"
+              name="image"
+              id="image"
+              onChange={(e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => {
+                  setImage(reader.result);
+                };
+              }}
+            />
             <label htmlFor="firstName">First Name: </label>
             <input
               className="form-input"
