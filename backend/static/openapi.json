@@ -1,0 +1,710 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "SocialBook",
+    "description": "API for social media project",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000/"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Authentication"      
+    }
+  ],
+  "paths": {
+    "/register": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Register a new user.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "firstName",
+                  "lastName",
+                  "email",
+                  "password",
+                  "confirmPassword"
+                ],
+                "properties": {
+                  "firstName": {
+                    "type": "string",
+                    "description": "User's first name."
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "description": "User's last name."
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "User's email address."
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "User's password."
+                  },
+                  "confirmPassword": {
+                    "type": "string",
+                    "description": "Confirmation of user's password."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User registered successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Success message.",
+                      "example": "User created."
+                    },
+                    "token": {
+                      "type": "string",
+                      "description": "Access token for the user.",
+                      "example": "<access_token>"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Passwords do not match.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message.",
+                      "example": "Passwords do not match."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "User already exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message.",
+                      "example": "User already exists."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Logs in a user.",
+        "requestBody": {
+          "description": "The user's email address and password.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "The user's email address."
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "The user's password."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Returns a success message with the new token and name.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "The success message."
+                    },
+                    "token": {
+                      "type": "string",
+                      "description": "The access token."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "The user's name."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Returns an error message if the user is already logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "The error message."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Returns an error message if the email or password is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "The error message."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },    
+    "/logout": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "summary": "Logs out a user.",
+        "responses": {
+          "200": {
+            "description": "Success message.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Success message.",
+                      "example": "User logged out successfully."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error message if the user is not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message.",
+                      "example": "User not logged in."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/update-profile": {
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Update user profile",
+        "description": "Updates the profile of the currently logged-in user.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "New user profile data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string",
+                    "description": "The user's new first name."
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "description": "The user's new last name."
+                  },
+                  "bio": {
+                    "type": "string",
+                    "description": "The user's new bio."
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "byte",
+                    "description": "The user's new profile image as a base64-encoded string."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profile updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "A message confirming the update."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "msg": {
+                      "type": "string",
+                      "description": "An error message explaining the reason for the error."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "An error message explaining the reason for the error."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/private": {
+      "put": {
+        "summary": "Toggle the privacy setting of the current user's account.",
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "A message indicating the success or failure of the operation."
+                    },
+                    "isPrivate": {
+                      "type": "boolean",
+                      "description": "The new privacy status of the account."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },    
+    "/follow/{user_id}":{
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Follow a user",
+        "description": "Follows the user with the specified ID.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "The ID of the user to follow.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User followed successfully."
+          },
+          "400": {
+            "description": "User is already followed."
+          },
+          "404": {
+            "description": "User not found."
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/unfollow/{user_id}": {
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Unfollow a user",
+        "description": "Unfollows the user with the specified ID.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "The ID of the user to unfollow.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User unfollowed successfully."
+          },
+          "400": {
+            "description": "User is not followed."
+          },
+          "404": {
+            "description": "User not found."
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/delete-request/{user_id}": {
+      "delete": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Delete a follow request",
+        "description": "Deletes the follow request sent to the user with the specified ID.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "The ID of the user who sent the follow request.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Follow request deleted successfully."
+          },
+          "400": {
+            "description": "You have not sent a follow request to this user."
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/accept/{user_id}":{
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Accept a follow request",
+        "description": "Accepts the follow request sent by the user with the specified ID.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "The ID of the user who sent the follow request.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Follow request accepted successfully."
+          },
+          "400": {
+            "description": "You have not received a follow request from this user."
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/remove-follower/{user_id}":{
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Remove a follower",
+        "description": "Removes the follower with the specified ID.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "The ID of the user to remove as a follower.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Follower removed successfully."
+          },
+          "400": {
+            "description": "You are not followed by this user."
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/get-followers": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Get a list of followers",
+        "description": "Returns a list of followers of the current user.",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of followers returned successfully."
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }    
+    },
+    "/get-following": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Get a list of users being followed",
+        "description": "Returns a list of users being followed by the current user.",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of users being followed returned successfully."
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }    
+    },
+    "/get-request-list": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Get a list of follow requests",
+        "description": "Returns a list of follow requests sent to the current user.",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of follow requests returned successfully."
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }    
+    },    
+    "/get-sent-requests":{
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Get a list of sent follow requests",
+        "description": "Returns a list of follow requests sent by the current user.",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of sent follow requests returned successfully."
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }    
+    },
+    "/get-user-info":{
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Get user info",
+        "description": "Returns the info of the user with the specified ID.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "The ID of the user to get info for.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User info returned successfully."
+          },
+          "404": {
+            "description": "User not found."
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }    
+    },
+    "/get-all-users": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Get a list of all users",
+        "description": "Returns a list of all users.",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all users returned successfully."
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }    
+    }
+  }
+}   
