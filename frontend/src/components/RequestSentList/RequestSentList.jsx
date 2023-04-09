@@ -12,9 +12,11 @@ const RequestSendList = () => {
       try {
         const response = await axios.get("/get-sent-requests");
         const sentRequestList = response.data.requested.map((user) => {
+          const base64Image = `data:image/jpg;base64,${user.image}`;
           return {
             id: user.id,
             name: user.name,
+            image: base64Image,
           };
         });
         setSentToUsers(sentRequestList);
@@ -45,6 +47,7 @@ const RequestSendList = () => {
           <User
             key={user.id}
             name={user.name}
+            image={user.image}
             textButton="delete request"
             onClick={() => handleDeleteRequest(user.id)}
           />

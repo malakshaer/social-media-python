@@ -12,9 +12,11 @@ const FollowingList = () => {
       try {
         const response = await axios.get("/get-following");
         const followingList = response.data.following.map((following) => {
+          const base64Image = `data:image/jpg;base64,${following.image}`;
           return {
             id: following.id,
             name: following.name,
+            image: base64Image,
           };
         });
         setFollowings(followingList);
@@ -45,6 +47,7 @@ const FollowingList = () => {
           <User
             key={user.id}
             name={user.name}
+            image={user.image}
             textButton="unfollow"
             onClick={() => handleUnFollow(user.id)}
           />

@@ -13,9 +13,11 @@ const RequestsList = () => {
         const response = await axios.get("/get-request-list");
         console.log(response);
         const requestList = response.data.requestList.map((request) => {
+          const base64Image = `data:image/jpg;base64,${request.image}`;
           return {
             id: request.id,
             name: request.name,
+            image: base64Image,
           };
         });
         setRequestsWaiting(requestList);
@@ -46,6 +48,7 @@ const RequestsList = () => {
           <User
             key={user.id}
             name={user.name}
+            image={user.image}
             textButton="Accept"
             onClick={() => handleAcceptUser(user.id)}
           />
