@@ -365,21 +365,6 @@ def get_sent_requests():
     return jsonify({'requestList': sent_requests})
 
 
-@user.route('/upload', methods=['POST'])
-@jwt_required()
-def upload_image():
-    # Get the base64-encoded image data from the request
-    image_data = request.json['image_data']
-
-    # Convert the base64-encoded image data to bytes
-    image_bytes = base64.b64decode(image_data)
-
-    # Upload the image to the database
-    mongo.db.users.insert_one({'name': 'profileImage', 'data': image_bytes})
-
-    return jsonify({'success': True})
-
-
 @user.route('/get-user-info', methods=['GET'])
 @jwt_required()
 def get_user_info():
