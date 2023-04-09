@@ -29,7 +29,16 @@ const Home = () => {
       <Navbar />
       <div className="users-card">
         {filteredUsers.map((user) => (
-          <UserCard key={user._id} data={user} />
+          <UserCard
+            key={user._id}
+            data={user}
+            firstName={user.firstName}
+            lastName={user.lastName}
+            num_followers={user.num_followers}
+            num_following={user.num_followers}
+            bio={user.bio}
+            image={user.image}
+          />
         ))}
       </div>
     </div>
