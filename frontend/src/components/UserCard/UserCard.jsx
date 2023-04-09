@@ -3,8 +3,16 @@ import "./usercard.css";
 import axios from "axios";
 import Button from "../Button/Button";
 
-const UserCard = ({ data }) => {
-  const { _id, firstName, lastName, bio, num_followers, num_following } = data;
+const UserCard = ({
+  data,
+  firstName,
+  lastName,
+  bio,
+  num_followers,
+  num_following,
+  image,
+}) => {
+  const { _id } = data;
 
   const handleFollow = () => {
     axios
@@ -20,6 +28,7 @@ const UserCard = ({ data }) => {
   return (
     <div className="card" style={{ width: "200px" }}>
       <div className="card-body">
+        <img src={image} alt="" />
         <h5 className="card-title">{`${firstName} ${lastName}`}</h5>
         <span>{`${bio}`}</span>
         <div className="count">
