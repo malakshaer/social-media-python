@@ -7,11 +7,15 @@ import axios from "axios";
 const Home = () => {
   const [users, setUsers] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
+  const [followingList, setFollowingList] = useState([]);
+  const [requestedList, setRequestedList] = useState([]);
 
   useEffect(() => {
     async function fetchCurrentUser() {
       const response = await axios.get("get-user-info");
       setCurrentUser(response.data.id);
+      setFollowingList(response.data.following_list);
+      setRequestedList(response.data.requested_list);
     }
     fetchCurrentUser();
 
@@ -22,7 +26,12 @@ const Home = () => {
     fetchUsers();
   }, []);
 
-  const filteredUsers = users.filter((user) => user._id !== currentUser);
+  const filteredUsers = users.filter(
+    (user) =>
+      user._id !== currentUser &&
+      !followingList.some((u) => u.id === user._id) &&
+      !requestedList.some((u) => u.id === user._id)
+  );
 
   return (
     <div className="home">
@@ -34,8 +43,8 @@ const Home = () => {
             data={user}
             firstName={user.firstName}
             lastName={user.lastName}
-            num_followers={user.num_followers}
-            num_following={user.num_followers}
+            num_followers={user.numberFollowers}
+            num_following={user.numberFollowing}
             bio={user.bio}
             image={user.image}
           />
