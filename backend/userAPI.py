@@ -357,6 +357,12 @@ def get_sent_requests():
         follower_name = follower_info['firstName'] + \
             ' ' + follower_info['lastName']
         follower_image = follower_info.get('image', None)
+        if follower_image:
+            follower_image = base64.b64encode(follower_image).decode('utf-8')
+        sent_requests.append(
+            {'id': str(follower_id), 'name': follower_name, 'image': follower_image})
+
+    return jsonify({'requestList': sent_requests})
 
 
 @user.route('/upload', methods=['POST'])
@@ -391,6 +397,10 @@ def get_user_info():
         if current_user.get('image'):
             image = base64.b64encode(current_user['image']).decode('utf-8')
 
+        # Retrieve following and requested lists
+        following_list = current_user.get('following', [])
+        requested_list = current_user.get('requested', [])
+
         # Return user info
         return jsonify({
             'id': str(current_user['_id']),
@@ -400,7 +410,9 @@ def get_user_info():
             'numberFollowing': num_following,
             'bio': current_user.get('bio', ''),
             'is_private': current_user.get('is_private', ''),
-            'image': image
+            'image': image,
+            'following_list': following_list,
+            'requested_list': requested_list
         })
     else:
         return jsonify({'message': 'User not found.'}), 404
