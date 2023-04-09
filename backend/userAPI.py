@@ -409,13 +409,16 @@ def get_user_info():
 @user.route('/get-all-users', methods=['GET'])
 def get_all_users():
     users = mongo.db.users.find(
-        {}, {'firstName': 1, 'lastName': 1, 'followers': 1, 'following': 1, 'bio': 1})
+        {}, {'firstName': 1, 'lastName': 1, 'followers': 1, 'following': 1, 'bio': 1, 'image': 1})
 
     result = []
     for user in users:
         user['_id'] = str(user['_id'])
         user['num_followers'] = len(user['followers'])
         user['num_following'] = len(user['following'])
+        if user.get('image'):
+            encoded_image = base64.b64encode(user['image']).decode('utf-8')
+            user['image'] = f"data:image/jpeg;base64,{encoded_image}"
         result.append(user)
 
     return jsonify(result)
