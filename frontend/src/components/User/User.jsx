@@ -1,10 +1,10 @@
 import React from "react";
 import "./user.css";
 
-const User = ({ name, textButton, onClick }) => {
+const User = ({ name, image, textButton, onClick }) => {
   return (
     <div className="user">
-      {/* <img src={userImage} alt="" /> */}
+      <img src={image} alt="" />
       <div className="username">
         <span>{name}</span>
       </div>
