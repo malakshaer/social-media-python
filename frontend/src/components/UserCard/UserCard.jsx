@@ -8,8 +8,8 @@ const UserCard = ({
   firstName,
   lastName,
   bio,
-  num_followers,
-  num_following,
+  numberFollowers = 0,
+  numberFollowing = 0,
   image,
 }) => {
   const { _id } = data;
@@ -32,8 +32,8 @@ const UserCard = ({
         <h5 className="card-title">{`${firstName} ${lastName}`}</h5>
         <span>{`${bio}`}</span>
         <div className="count">
-          <p className="card-text">Followers: {num_followers}</p>
-          <p className="card-text">Following: {num_following}</p>
+          <p className="card-text">Followers: {numberFollowers}</p>
+          <p className="card-text">Following: {numberFollowing}</p>
         </div>
         <Button text={"Follow"} onClick={handleFollow} />
       </div>
