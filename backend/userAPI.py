@@ -31,6 +31,16 @@ def update_profile():
     first_name = data.get('firstName', user['firstName'])
     last_name = data.get('lastName', user['lastName'])
     bio = data.get('bio', user['bio'])
+    image = data.get('image', user.get('image'))
+
+    if image:
+        # if an image was uploaded, save it to the user's profile
+        image_data = base64.b64decode(image.split(',')[1])
+        mongo.db.users.update_one({'_id': ObjectId(user_id)}, {
+            '$set': {
+                'image': image_data
+            }
+        })
 
     # update the user profile
     mongo.db.users.update_one({'_id': ObjectId(user_id)}, {
@@ -277,7 +287,11 @@ def get_followers():
         follower_info = mongo.db.users.find_one({'_id': follower_id})
         follower_name = follower_info['firstName'] + \
             ' ' + follower_info['lastName']
-        followers.append({'id': str(follower_id), 'name': follower_name})
+        follower_image = follower_info.get('image', None)
+        if follower_image:
+            follower_image = base64.b64encode(follower_image).decode('utf-8')
+        followers.append(
+            {'id': str(follower_id), 'name': follower_name, 'image': follower_image})
 
     return jsonify({'followers': followers})
 
@@ -296,7 +310,11 @@ def get_following():
         follower_info = mongo.db.users.find_one({'_id': follower_id})
         follower_name = follower_info['firstName'] + \
             ' ' + follower_info['lastName']
-        following.append({'id': str(follower_id), 'name': follower_name})
+        follower_image = follower_info.get('image', None)
+        if follower_image:
+            follower_image = base64.b64encode(follower_image).decode('utf-8')
+        following.append(
+            {'id': str(follower_id), 'name': follower_name, 'image': follower_image})
 
     return jsonify({'following': following})
 
@@ -315,7 +333,11 @@ def get_request_list():
         follower_info = mongo.db.users.find_one({'_id': follower_id})
         follower_name = follower_info['firstName'] + \
             ' ' + follower_info['lastName']
-        request_list.append({'id': str(follower_id), 'name': follower_name})
+        follower_image = follower_info.get('image', None)
+        if follower_image:
+            follower_image = base64.b64encode(follower_image).decode('utf-8')
+        request_list.append(
+            {'id': str(follower_id), 'name': follower_name, 'image': follower_image})
 
     return jsonify({'requestList': request_list})
 
@@ -334,9 +356,7 @@ def get_sent_requests():
         follower_info = mongo.db.users.find_one({'_id': follower_id})
         follower_name = follower_info['firstName'] + \
             ' ' + follower_info['lastName']
-        sent_requests.append({'id': str(follower_id), 'name': follower_name})
-
-    return jsonify({'requested': sent_requests})
+        follower_image = follower_info.get('image', None)
 
 
 @user.route('/upload', methods=['POST'])
@@ -366,6 +386,11 @@ def get_user_info():
         num_followers = len(current_user.get('followers', []))
         num_following = len(current_user.get('following', []))
 
+        # Retrieve profile image as base64 string
+        image = ''
+        if current_user.get('image'):
+            image = base64.b64encode(current_user['image']).decode('utf-8')
+
         # Return user info
         return jsonify({
             'id': str(current_user['_id']),
@@ -374,7 +399,8 @@ def get_user_info():
             'numberFollowers': num_followers,
             'numberFollowing': num_following,
             'bio': current_user.get('bio', ''),
-            'is_private': current_user.get('is_private', '')
+            'is_private': current_user.get('is_private', ''),
+            'image': image
         })
     else:
         return jsonify({'message': 'User not found.'}), 404
