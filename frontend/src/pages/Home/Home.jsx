@@ -43,8 +43,8 @@ const Home = () => {
             data={user}
             firstName={user.firstName}
             lastName={user.lastName}
-            num_followers={user.numberFollowers}
-            num_following={user.numberFollowing}
+            numberFollowers={user.num_followers}
+            numberFollowing={user.num_following}
             bio={user.bio}
             image={user.image}
           />
