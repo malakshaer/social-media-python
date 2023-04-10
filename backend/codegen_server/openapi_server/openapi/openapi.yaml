@@ -1,0 +1,559 @@
+openapi: 3.0.3
+info:
+  description: API for social media project
+  title: SocialBook
+  version: 1.0.0
+servers:
+- url: http://localhost:5000/
+tags:
+- name: Authentication
+paths:
+  /accept/{user_id}:
+    post:
+      description: Accepts the follow request sent by the user with the specified
+        ID.
+      operationId: accept_user_id_post
+      parameters:
+      - content:
+          application/json:
+            schema:
+              type: string
+        description: The ID of the user who sent the follow request.
+        in: path
+        name: user_id
+        required: true
+      responses:
+        "200":
+          description: Follow request accepted successfully.
+        "400":
+          description: You have not received a follow request from this user.
+      security:
+      - JWT: []
+      summary: Accept a follow request
+      tags:
+      - User
+      x-openapi-router-controller: openapi_server.controllers.user_controller
+  /delete-request/{user_id}:
+    delete:
+      description: Deletes the follow request sent to the user with the specified
+        ID.
+      operationId: delete_request_user_id_delete
+      parameters:
+      - content:
+          application/json:
+            schema:
+              type: string
+        description: The ID of the user who sent the follow request.
+        in: path
+        name: user_id
+        required: true
+      responses:
+        "200":
+          description: Follow request deleted successfully.
+        "400":
+          description: You have not sent a follow request to this user.
+      security:
+      - JWT: []
+      summary: Delete a follow request
+      tags:
+      - User
+      x-openapi-router-controller: openapi_server.controllers.user_controller
+  /follow/{user_id}:
+    post:
+      description: Follows the user with the specified ID.
+      operationId: follow_user_id_post
+      parameters:
+      - content:
+          application/json:
+            schema:
+              type: string
+        description: The ID of the user to follow.
+        in: path
+        name: user_id
+        required: true
+      responses:
+        "200":
+          description: User followed successfully.
+        "400":
+          description: User is already followed.
+        "404":
+          description: User not found.
+      security:
+      - JWT: []
+      summary: Follow a user
+      tags:
+      - User
+      x-openapi-router-controller: openapi_server.controllers.user_controller
+  /get-all-users:
+    get:
+      description: Returns a list of all users.
+      operationId: get_all_users_get
+      responses:
+        "200":
+          description: List of all users returned successfully.
+      security:
+      - JWT: []
+      summary: Get a list of all users
+      tags:
+      - User
+      x-openapi-router-controller: openapi_server.controllers.user_controller
+  /get-followers:
+    get:
+      description: Returns a list of followers of the current user.
+      operationId: get_followers_get
+      responses:
+        "200":
+          description: List of followers returned successfully.
+      security:
+      - JWT: []
+      summary: Get a list of followers
+      tags:
+      - User
+      x-openapi-router-controller: openapi_server.controllers.user_controller
+  /get-following:
+    get:
+      description: Returns a list of users being followed by the current user.
+      operationId: get_following_get
+      responses:
+        "200":
+          description: List of users being followed returned successfully.
+      security:
+      - JWT: []
+      summary: Get a list of users being followed
+      tags:
+      - User
+      x-openapi-router-controller: openapi_server.controllers.user_controller
+  /get-request-list:
+    get:
+      description: Returns a list of follow requests sent to the current user.
+      operationId: get_request_list_get
+      responses:
+        "200":
+          description: List of follow requests returned successfully.
+      security:
+      - JWT: []
+      summary: Get a list of follow requests
+      tags:
+      - User
+      x-openapi-router-controller: openapi_server.controllers.user_controller
+  /get-sent-requests:
+    get:
+      description: Returns a list of follow requests sent by the current user.
+      operationId: get_sent_requests_get
+      responses:
+        "200":
+          description: List of sent follow requests returned successfully.
+      security:
+      - JWT: []
+      summary: Get a list of sent follow requests
+      tags:
+      - User
+      x-openapi-router-controller: openapi_server.controllers.user_controller
+  /get-user-info/{user_id}:
+    get:
+      description: Returns the info of the user with the specified ID.
+      operationId: get_user_info_user_id_get
+      parameters:
+      - content:
+          application/json:
+            schema:
+              type: string
+        description: The ID of the user to get info for.
+        in: path
+        name: user_id
+        required: true
+      responses:
+        "200":
+          description: User info returned successfully.
+        "404":
+          description: User not found.
+      security:
+      - JWT: []
+      summary: Get user info
+      tags:
+      - User
+      x-openapi-router-controller: openapi_server.controllers.user_controller
+  /login:
+    post:
+      operationId: login_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/_login_post_request'
+        description: The user's email address and password.
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_login_post_201_response'
+          description: Returns a success message with the new token and name.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_login_post_400_response'
+          description: Returns an error message if the user is already logged in.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_login_post_400_response'
+          description: Returns an error message if the email or password is invalid.
+      summary: Logs in a user.
+      tags:
+      - Authentication
+      x-openapi-router-controller: openapi_server.controllers.authentication_controller
+  /logout:
+    get:
+      operationId: logout_get
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_logout_get_200_response'
+          description: Success message.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_logout_get_401_response'
+          description: Error message if the user is not logged in.
+      security:
+      - JWT: []
+      summary: Logs out a user.
+      tags:
+      - Authentication
+      x-openapi-router-controller: openapi_server.controllers.authentication_controller
+  /private:
+    put:
+      operationId: private_put
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_private_put_200_response'
+          description: Success
+      security:
+      - JWT: []
+      summary: Toggle the privacy setting of the current user's account.
+      tags:
+      - User
+      x-openapi-router-controller: openapi_server.controllers.user_controller
+  /register:
+    post:
+      operationId: register_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/_register_post_request'
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_register_post_201_response'
+          description: User registered successfully.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_register_post_400_response'
+          description: Passwords do not match.
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_register_post_409_response'
+          description: User already exists.
+      summary: Register a new user.
+      tags:
+      - Authentication
+      x-openapi-router-controller: openapi_server.controllers.authentication_controller
+  /remove-follower/{user_id}:
+    post:
+      description: Removes the follower with the specified ID.
+      operationId: remove_follower_user_id_post
+      parameters:
+      - content:
+          application/json:
+            schema:
+              type: string
+        description: The ID of the user to remove as a follower.
+        in: path
+        name: user_id
+        required: true
+      responses:
+        "200":
+          description: Follower removed successfully.
+        "400":
+          description: You are not followed by this user.
+      security:
+      - JWT: []
+      summary: Remove a follower
+      tags:
+      - User
+      x-openapi-router-controller: openapi_server.controllers.user_controller
+  /unfollow/{user_id}:
+    put:
+      description: Unfollows the user with the specified ID.
+      operationId: unfollow_user_id_put
+      parameters:
+      - content:
+          application/json:
+            schema:
+              type: string
+        description: The ID of the user to unfollow.
+        in: path
+        name: user_id
+        required: true
+      responses:
+        "200":
+          description: User unfollowed successfully.
+        "400":
+          description: User is not followed.
+        "404":
+          description: User not found.
+      security:
+      - JWT: []
+      summary: Unfollow a user
+      tags:
+      - User
+      x-openapi-router-controller: openapi_server.controllers.user_controller
+  /update-profile:
+    put:
+      description: Updates the profile of the currently logged-in user.
+      operationId: update_profile_put
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/_update_profile_put_request'
+        description: New user profile data
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_update_profile_put_200_response'
+          description: Profile updated successfully
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_update_profile_put_401_response'
+          description: Unauthorized
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_update_profile_put_404_response'
+          description: User not found
+      security:
+      - JWT: []
+      summary: Update user profile
+      tags:
+      - User
+      x-openapi-router-controller: openapi_server.controllers.user_controller
+components:
+  schemas:
+    _update_profile_put_404_response:
+      properties:
+        message:
+          description: An error message explaining the reason for the error.
+          title: message
+          type: string
+      title: _update_profile_put_404_response
+      type: object
+    _update_profile_put_401_response:
+      properties:
+        msg:
+          description: An error message explaining the reason for the error.
+          title: msg
+          type: string
+      title: _update_profile_put_401_response
+      type: object
+    _logout_get_200_response:
+      example:
+        message: User logged out successfully.
+      properties:
+        message:
+          description: Success message.
+          example: User logged out successfully.
+          title: message
+          type: string
+      title: _logout_get_200_response
+      type: object
+    _login_post_201_response:
+      example:
+        name: name
+        message: message
+        token: token
+      properties:
+        message:
+          description: The success message.
+          title: message
+          type: string
+        token:
+          description: The access token.
+          title: token
+          type: string
+        name:
+          description: The user's name.
+          title: name
+          type: string
+      title: _login_post_201_response
+      type: object
+    _register_post_409_response:
+      properties:
+        message:
+          description: Error message.
+          example: User already exists.
+          title: message
+          type: string
+      title: _register_post_409_response
+      type: object
+    _login_post_request:
+      properties:
+        email:
+          description: The user's email address.
+          title: email
+          type: string
+        password:
+          description: The user's password.
+          title: password
+          type: string
+      title: _login_post_request
+      type: object
+    _login_post_400_response:
+      properties:
+        message:
+          description: The error message.
+          title: message
+          type: string
+      title: _login_post_400_response
+      type: object
+    _private_put_200_response:
+      example:
+        isPrivate: true
+        message: message
+      properties:
+        message:
+          description: A message indicating the success or failure of the operation.
+          title: message
+          type: string
+        isPrivate:
+          description: The new privacy status of the account.
+          title: isPrivate
+          type: boolean
+      title: _private_put_200_response
+      type: object
+    _register_post_201_response:
+      example:
+        message: User created.
+        token: <access_token>
+      properties:
+        message:
+          description: Success message.
+          example: User created.
+          title: message
+          type: string
+        token:
+          description: Access token for the user.
+          example: <access_token>
+          title: token
+          type: string
+      title: _register_post_201_response
+      type: object
+    _update_profile_put_200_response:
+      example:
+        message: message
+      properties:
+        message:
+          description: A message confirming the update.
+          title: message
+          type: string
+      title: _update_profile_put_200_response
+      type: object
+    _register_post_400_response:
+      properties:
+        message:
+          description: Error message.
+          example: Passwords do not match.
+          title: message
+          type: string
+      title: _register_post_400_response
+      type: object
+    _update_profile_put_request:
+      properties:
+        firstName:
+          description: The user's new first name.
+          title: firstName
+          type: string
+        lastName:
+          description: The user's new last name.
+          title: lastName
+          type: string
+        bio:
+          description: The user's new bio.
+          title: bio
+          type: string
+        image:
+          description: The user's new profile image as a base64-encoded string.
+          format: byte
+          title: image
+          type: string
+      title: _update_profile_put_request
+      type: object
+    _register_post_request:
+      properties:
+        firstName:
+          description: User's first name.
+          title: firstName
+          type: string
+        lastName:
+          description: User's last name.
+          title: lastName
+          type: string
+        email:
+          description: User's email address.
+          title: email
+          type: string
+        password:
+          description: User's password.
+          title: password
+          type: string
+        confirmPassword:
+          description: Confirmation of user's password.
+          title: confirmPassword
+          type: string
+      required:
+      - confirmPassword
+      - email
+      - firstName
+      - lastName
+      - password
+      title: _register_post_request
+      type: object
+    _logout_get_401_response:
+      properties:
+        message:
+          description: Error message.
+          example: User not logged in.
+          title: message
+          type: string
+      title: _logout_get_401_response
+      type: object
+  securitySchemes:
+    JWT:
+      bearerFormat: JWT
+      scheme: bearer
+      type: http
+      x-bearerInfoFunc: openapi_server.controllers.security_controller_.info_from_JWT
