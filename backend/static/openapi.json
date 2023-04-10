@@ -12,7 +12,7 @@
   ],
   "tags": [
     {
-      "name": "Authentication"      
+      "name": "Authentication"
     }
   ],
   "components": {
@@ -216,7 +216,7 @@
           }
         }
       }
-    },    
+    },
     "/logout": {
       "get": {
         "tags": [
@@ -224,11 +224,7 @@
         ],
         "security": [
           {
-            "JWT": {
-              "type": "http",
-              "scheme": "bearer",
-              "bearerFormat": "JWT"
-            }
+            "JWT": []
           }
         ],
         "summary": "Logs out a user.",
@@ -279,11 +275,7 @@
         "description": "Updates the profile of the currently logged-in user.",
         "security": [
           {
-            "JWT": {
-              "type": "http",
-              "scheme": "bearer",
-              "bearerFormat": "JWT"
-            }
+            "JWT": []
           }
         ],
         "requestBody": {
@@ -376,11 +368,7 @@
         ],
         "security": [
           {
-            "JWT": {
-              "type": "http",
-              "scheme": "bearer",
-              "bearerFormat": "JWT"
-            }
+            "JWT": []
           }
         ],
         "responses": {
@@ -406,24 +394,27 @@
           }
         }
       }
-    },    
-    "/follow/{user_id}":{
+    },
+    "/follow/{user_id}": {
       "post": {
         "tags": [
           "User"
         ],
         "summary": "Follow a user",
         "description": "Follows the user with the specified ID.",
-        "produces": [
-          "application/json"
-        ],
         "parameters": [
           {
             "name": "user_id",
             "in": "path",
             "description": "The ID of the user to follow.",
             "required": true,
-            "type": "string"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -439,11 +430,7 @@
         },
         "security": [
           {
-            "JWT": {
-              "type": "http",
-              "scheme": "bearer",
-              "bearerFormat": "JWT"
-            }
+            "JWT": []
           }
         ]
       }
@@ -455,16 +442,19 @@
         ],
         "summary": "Unfollow a user",
         "description": "Unfollows the user with the specified ID.",
-        "produces": [
-          "application/json"
-        ],
         "parameters": [
           {
             "name": "user_id",
             "in": "path",
             "description": "The ID of the user to unfollow.",
             "required": true,
-            "type": "string"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -480,11 +470,7 @@
         },
         "security": [
           {
-            "JWT": {
-              "type": "http",
-              "scheme": "bearer",
-              "bearerFormat": "JWT"
-            }
+            "JWT": []
           }
         ]
       }
@@ -496,16 +482,19 @@
         ],
         "summary": "Delete a follow request",
         "description": "Deletes the follow request sent to the user with the specified ID.",
-        "produces": [
-          "application/json"
-        ],
         "parameters": [
           {
             "name": "user_id",
             "in": "path",
             "description": "The ID of the user who sent the follow request.",
             "required": true,
-            "type": "string"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -518,32 +507,31 @@
         },
         "security": [
           {
-            "JWT": {
-              "type": "http",
-              "scheme": "bearer",
-              "bearerFormat": "JWT"
-            }
+            "JWT": []
           }
         ]
       }
     },
-    "/accept/{user_id}":{
+    "/accept/{user_id}": {
       "post": {
         "tags": [
           "User"
         ],
         "summary": "Accept a follow request",
         "description": "Accepts the follow request sent by the user with the specified ID.",
-        "produces": [
-          "application/json"
-        ],
         "parameters": [
           {
             "name": "user_id",
             "in": "path",
             "description": "The ID of the user who sent the follow request.",
             "required": true,
-            "type": "string"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -556,32 +544,31 @@
         },
         "security": [
           {
-            "JWT": {
-              "type": "http",
-              "scheme": "bearer",
-              "bearerFormat": "JWT"
-            }
+            "JWT": []
           }
         ]
       }
     },
-    "/remove-follower/{user_id}":{
+    "/remove-follower/{user_id}": {
       "post": {
         "tags": [
           "User"
         ],
         "summary": "Remove a follower",
         "description": "Removes the follower with the specified ID.",
-        "produces": [
-          "application/json"
-        ],
         "parameters": [
           {
             "name": "user_id",
             "in": "path",
             "description": "The ID of the user to remove as a follower.",
             "required": true,
-            "type": "string"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -594,11 +581,7 @@
         },
         "security": [
           {
-            "JWT": {
-              "type": "http",
-              "scheme": "bearer",
-              "bearerFormat": "JWT"
-            }
+            "JWT": []
           }
         ]
       }
@@ -610,9 +593,6 @@
         ],
         "summary": "Get a list of followers",
         "description": "Returns a list of followers of the current user.",
-        "produces": [
-          "application/json"
-        ],
         "responses": {
           "200": {
             "description": "List of followers returned successfully."
@@ -620,14 +600,10 @@
         },
         "security": [
           {
-            "JWT": {
-              "type": "http",
-              "scheme": "bearer",
-              "bearerFormat": "JWT"
-            }
+            "JWT": []
           }
         ]
-      }    
+      }
     },
     "/get-following": {
       "get": {
@@ -636,9 +612,6 @@
         ],
         "summary": "Get a list of users being followed",
         "description": "Returns a list of users being followed by the current user.",
-        "produces": [
-          "application/json"
-        ],
         "responses": {
           "200": {
             "description": "List of users being followed returned successfully."
@@ -646,14 +619,10 @@
         },
         "security": [
           {
-            "JWT": {
-              "type": "http",
-              "scheme": "bearer",
-              "bearerFormat": "JWT"
-            }
+            "JWT": []
           }
         ]
-      }    
+      }
     },
     "/get-request-list": {
       "get": {
@@ -662,9 +631,6 @@
         ],
         "summary": "Get a list of follow requests",
         "description": "Returns a list of follow requests sent to the current user.",
-        "produces": [
-          "application/json"
-        ],
         "responses": {
           "200": {
             "description": "List of follow requests returned successfully."
@@ -672,25 +638,18 @@
         },
         "security": [
           {
-            "JWT": {
-              "type": "http",
-              "scheme": "bearer",
-              "bearerFormat": "JWT"
-            }
+            "JWT": []
           }
         ]
-      }    
-    },    
-    "/get-sent-requests":{
+      }
+    },
+    "/get-sent-requests": {
       "get": {
         "tags": [
           "User"
         ],
         "summary": "Get a list of sent follow requests",
         "description": "Returns a list of follow requests sent by the current user.",
-        "produces": [
-          "application/json"
-        ],
         "responses": {
           "200": {
             "description": "List of sent follow requests returned successfully."
@@ -698,32 +657,31 @@
         },
         "security": [
           {
-            "JWT": {
-              "type": "http",
-              "scheme": "bearer",
-              "bearerFormat": "JWT"
-            }
+            "JWT": []
           }
         ]
-      }    
+      }
     },
-    "/get-user-info":{
+    "/get-user-info/{user_id}": {
       "get": {
         "tags": [
           "User"
         ],
         "summary": "Get user info",
         "description": "Returns the info of the user with the specified ID.",
-        "produces": [
-          "application/json"
-        ],
         "parameters": [
           {
             "name": "user_id",
             "in": "path",
             "description": "The ID of the user to get info for.",
             "required": true,
-            "type": "string"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -736,14 +694,10 @@
         },
         "security": [
           {
-            "JWT": {
-              "type": "http",
-              "scheme": "bearer",
-              "bearerFormat": "JWT"
-            }
+            "JWT": []
           }
         ]
-      }    
+      }
     },
     "/get-all-users": {
       "get": {
@@ -752,9 +706,6 @@
         ],
         "summary": "Get a list of all users",
         "description": "Returns a list of all users.",
-        "produces": [
-          "application/json"
-        ],
         "responses": {
           "200": {
             "description": "List of all users returned successfully."
@@ -762,14 +713,10 @@
         },
         "security": [
           {
-            "JWT": {
-              "type": "http",
-              "scheme": "bearer",
-              "bearerFormat": "JWT"
-            }
+            "JWT": []
           }
         ]
-      }    
+      }
     }
   }
-}   
+}
