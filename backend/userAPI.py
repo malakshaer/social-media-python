@@ -7,6 +7,9 @@ from bson.objectid import ObjectId
 from flask_pymongo import PyMongo
 import datetime
 import base64
+import bcrypt
+from werkzeug.security import check_password_hash
+
 
 user = Blueprint('userAPI', __name__)
 
@@ -32,6 +35,15 @@ def update_profile():
     last_name = data.get('lastName', user['lastName'])
     bio = data.get('bio', user['bio'])
     image = data.get('image', user.get('image'))
+    current_password = data.get('currentPassword')
+
+    # check if current password is provided
+    if not current_password:
+        return jsonify({'message': 'Current password is required'}), 404
+
+    # verify current password
+    if not bcrypt.checkpw(current_password.encode('utf-8'), user['password']):
+        return jsonify({'message': 'Invalid current password'}), 400
 
     if image:
         # if an image was uploaded, save it to the user's profile
@@ -80,6 +92,11 @@ def make_account_private():
 def follow_user(user_id):
     # Get the current user's ID and information
     current_user_id = get_jwt_identity()
+
+    # Check if the user is trying to follow themselves
+    if str(user_id) == str(current_user_id):
+        return jsonify({'message': 'You cannot follow yourself.'}), 400
+
     current_user = mongo.db.users.find_one({'_id': ObjectId(current_user_id)})
     current_user_name = current_user['firstName'] + \
         ' ' + current_user['lastName']
@@ -175,14 +192,14 @@ def delete_follow_request(user_id):
     current_user_name = current_user['firstName'] + \
         ' ' + current_user['lastName']
 
+    # Check if the current user has sent a follow request to the other user
+    if 'requested' not in current_user or {'id': user_id, 'name': user_to_follow_name} not in current_user['requested']:
+        return jsonify({'message': 'You have not sent a follow request to this user.'}), 400
+
     # Get the user being followed's information
     user_to_follow = mongo.db.users.find_one({'_id': ObjectId(user_id)})
     user_to_follow_name = user_to_follow['firstName'] + \
         ' ' + user_to_follow['lastName']
-
-    # Check if the current user has sent a follow request to the other user
-    if {'id': user_id, 'name': user_to_follow_name} not in current_user['requested']:
-        return jsonify({'message': 'You have not sent a follow request to this user.'}), 400
 
     # Remove the other user from the current user's requested list
     mongo.db.users.update_one(
@@ -204,6 +221,9 @@ def delete_follow_request(user_id):
 def accept_request(user_id):
     current_user_id = get_jwt_identity()
     current_user = mongo.db.users.find_one({'_id': ObjectId(current_user_id)})
+
+    if 'request_list' not in current_user:
+        return jsonify({'message': 'No follow request from user.'}), 400
 
     # Check if the current user has a request from the user to accept
     request = None
@@ -328,16 +348,18 @@ def get_request_list():
 
     # Get the list of users following the current user
     request_list = []
-    for follower in current_user['request_list']:
-        follower_id = ObjectId(follower['id'])
-        follower_info = mongo.db.users.find_one({'_id': follower_id})
-        follower_name = follower_info['firstName'] + \
-            ' ' + follower_info['lastName']
-        follower_image = follower_info.get('image', None)
-        if follower_image:
-            follower_image = base64.b64encode(follower_image).decode('utf-8')
+    # Get the request key or any empty list if it doesn't exists
+    request_key = current_user.get('request_list', [])
+    for request in request_key:
+        request_id = ObjectId(request['id'])
+        request_info = mongo.db.users.find_one({'_id': request_id})
+        request_name = request_info['firstName'] + \
+            ' ' + request_info['lastName']
+        request_image = request_info.get('image', None)
+        if request_image:
+            request_image = base64.b64encode(request_image).decode('utf-8')
         request_list.append(
-            {'id': str(follower_id), 'name': follower_name, 'image': follower_image})
+            {'id': str(request_id), 'name': request_name, 'image': request_image})
 
     return jsonify({'requestList': request_list})
 
@@ -351,7 +373,9 @@ def get_sent_requests():
 
     # Get the list of users following the current user
     sent_requests = []
-    for follower in current_user['requested']:
+    # Get the requested key or an empty list if it doesn't exist
+    requested = current_user.get('requested', [])
+    for follower in requested:
         follower_id = ObjectId(follower['id'])
         follower_info = mongo.db.users.find_one({'_id': follower_id})
         follower_name = follower_info['firstName'] + \
