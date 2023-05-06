@@ -4,6 +4,7 @@ import jwt
 from flask_pymongo import PyMongo
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import jwt_required
+import re
 
 auth = Blueprint('authAPI', __name__)
 
@@ -24,6 +25,26 @@ def register():
     email = request.json['email']
     password = request.json['password']
     confirm_password = request.json['confirmPassword']
+
+    # Check if email exists
+    if not email:
+        return jsonify({'message': "Email is required"}), 400
+
+    # Check if email is valid
+    if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+        return jsonify({'message': 'Invalid email.'}), 400
+
+    # Check if password exists
+    if not password:
+        return jsonify({'message': "Password is required"}), 400
+
+    # Check if first name exists
+    if not first_name:
+        return jsonify({'message': "First name is required"}), 400
+
+    # Check if last name exists
+    if not last_name:
+        return jsonify({'message': "Last name is required"}), 400
 
     # Check if user already exists
     user = mongo.db.users.find_one({'email': email})
@@ -72,7 +93,12 @@ def login():
         return jsonify({'message': 'User already logged in.'}), 400
 
     # Get the user input
+    if not request.json['email']:
+        return jsonify({'message': "Email is required"}), 400
     email = request.json['email']
+
+    if not request.json['password']:
+        return jsonify({'message': "Password is required"}), 400
     password = request.json['password']
 
     # Check if email exists
