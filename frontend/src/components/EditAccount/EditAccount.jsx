@@ -12,6 +12,7 @@ const EditAccount = () => {
   const [lastName, setLastName] = useState("");
   const [bio, setBio] = useState("");
   const [image, setImage] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isExpandedEdit, setIsExpandedEdit] = useState(false);
@@ -20,12 +21,12 @@ const EditAccount = () => {
 
   const handleUpdateAccount = async (e) => {
     e.preventDefault();
-    if (!firstName || !lastName) {
-      setError("First name and last name are required.");
+    if (!currentPassword) {
+      setError("Your current password is required");
       return;
     }
 
-    let userData = { firstName, lastName, bio };
+    let userData = { firstName, lastName, bio, currentPassword };
     if (image) {
       userData = { ...userData, image };
     }
@@ -93,6 +94,15 @@ const EditAccount = () => {
                 };
               }}
             />
+            <label htmlFor="currentPassword">Current Password:(required)</label>
+            <input
+              className="form-input"
+              type="password"
+              name="currentPassword"
+              id="currentPassword"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+            />
             <label htmlFor="firstName">First Name: </label>
             <input
               className="form-input"
@@ -117,7 +127,9 @@ const EditAccount = () => {
               value={bio}
               onChange={(e) => setBio(e.target.value)}
             />
-            <Button text={"save"} onClick={handleUpdateAccount} />
+            <div className="saveButton">
+              <Button text={"save"} onClick={handleUpdateAccount} />
+            </div>
             {error && <p className="error">{error}</p>}
             {successMessage && (
               <div className="success-message">{successMessage}</div>
