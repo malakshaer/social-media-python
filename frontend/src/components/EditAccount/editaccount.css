@@ -44,7 +44,7 @@
     color:rgb(84, 84, 84);
 }
   
-.form-group input[type="text"],
+.form-group input,
 .form-group textarea {
     width: 100%;
     padding: 10px;
@@ -91,5 +91,9 @@
 
 .privacy{
     text-align: center; 
+}
+
+.saveButton Button{
+    text-align: center;
 }
   
